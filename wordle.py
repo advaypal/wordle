@@ -68,7 +68,11 @@ def wordle(answer='favor'):
     words = load_words(None, None, None)
     first = False
     while True:
-        guess = get_guess(words)
+        if first:
+            guess = 'store'
+            first = False
+        else:
+            guess = get_guess(words)
         print(guess)
         guesses.add(guess)
         if guess == answer:
