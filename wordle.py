@@ -1,4 +1,4 @@
-from collections import defaultdict
+from collections import defaultdict, Counter
 def load_words(words, hints, guesses):
     if not words:
         with open('words.txt', 'r') as f:
@@ -52,21 +52,28 @@ def get_guess(words):
 
 def get_hints(word, answer):
     greens, yellows, blacks = [None] * 5, [], set()
+    answer_counter = Counter(answer)
     for _ in range(5):
         yellows.append(set())
     for index, char in enumerate(word):
         if char == answer[index]:
             greens[index] = char
-        elif char in answer:
+            answer_counter[char] -= 1
+
+    for index, char in enumerate(word):
+        if greens[index] is not None:
+            continue
+        if char in answer_counter and answer_counter[char] > 0:
             yellows[index].add(char)
-        else:
+            answer_counter[char] -= 1
+        elif char not in answer_counter:
             blacks.add(char)
     return (greens, yellows, blacks)
 
 def wordle(answer='favor'):
     guesses = set()
     words = load_words(None, None, None)
-    first = False
+    first = True
     while True:
         if first:
             guess = 'store'
